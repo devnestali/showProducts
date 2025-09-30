@@ -7,6 +7,8 @@ import {
 
 import { Separator } from "@/components/ui/separator"
 
+import { Link } from "react-router-dom"
+
 export function Header() {
   return (
     <div>
@@ -17,13 +19,10 @@ export function Header() {
           <NavigationMenuList>
             <NavigationMenuItem className="flex items-center gap-12">
               <NavigationMenuLink asChild>
-                <a href="/">Início</a>
+                <Link to="/">Início</Link>
               </NavigationMenuLink>
               <NavigationMenuLink asChild>
-                <a href="/">Pedidos</a>
-              </NavigationMenuLink>
-              <NavigationMenuLink asChild>
-                <a href="/">Grafico</a>
+                <Link to="/orders-graph">Grafico</Link>
               </NavigationMenuLink>
             </NavigationMenuItem>
           </NavigationMenuList>
