@@ -21,6 +21,7 @@
     "react": "^19.1.1",
     "react-dom": "^19.1.1",
     "react-router-dom": "^7.9.3",
+    "recharts": "^2.15.4",
     "tailwind-merge": "^3.3.1",
     "tailwindcss": "^4.1.13"
   },
@@ -36,5 +37,8 @@
     "typescript-eslint": "^8.44.0",
     "ultracite": "^5.4.6",
     "vite": "^7.1.7"
+  },
+  "overrides": {
+    "react-is": "^19.0.0-rc-69d4b800-20241021"
   }
 }

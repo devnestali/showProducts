@@ -17,6 +17,7 @@ export function Order() {
         <div className="flex flex-col gap-2">
           <label htmlFor="title">Título</label>
           <Input 
+            type="text"
             id="title" 
             className="w-2xl" 
             placeholder="Digite o título do pedido..." 
