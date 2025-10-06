@@ -1,18 +1,33 @@
+import { Navigate, Route, Routes } from "react-router-dom";
+
 import { Home } from "@/pages/Home";
 import { Login } from "@/pages/Login";
 import { Order } from "@/pages/Order";
 import { OrdersGraph } from "@/pages/OrdersGraph";
 import { Register } from "@/pages/Register";
-import { Route, Routes } from "react-router-dom";
+import { useAuth } from "@/contexts/authContext";
 
 export function AppRoutes() {
+  const { token, userId } = useAuth()
+  
   return (
     <Routes>
-      <Route element={<Home />} index />
-      <Route element={<Order />} path="/order/:id" />
-      <Route element={<OrdersGraph />} path="/orders-graph" />
-      <Route element={<Login />} path="/login" />
-      <Route element={<Register />} path="/register" />
+      {
+        token && userId ? (
+        <>
+          <Route element={<Home />} path="/home" />
+          <Route element={<Order />} path="/order/:id" />
+          <Route element={<OrdersGraph />} path="/graph" />
+          <Route element={<Navigate to="/home" replace />} path="/*" />
+        </>
+        ) : (
+          <>
+            <Route element={<Login />} path="/login" />
+            <Route element={<Register />} path="/register" />
+            <Route element={<Navigate to="/login" replace />} path="/*" />
+          </>
+        )
+      }
     </Routes>
   )
 }
