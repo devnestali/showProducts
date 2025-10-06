@@ -4,20 +4,14 @@ import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-
-import { api } from "@/lib/axios";
-
-type UserInfoData = {
-  id: number
-  token: string
-}
+import { useAuth } from "@/contexts/authContext";
 
 export function Login() {
   const [email, setEmail] = useState<string>()
   const [password, setPassword] = useState<string>()
   
-  
   const navigate = useNavigate()
+  const { signIn } = useAuth()
   
   function handleNavigationToRegister() {
     navigate('/register')
@@ -31,24 +25,20 @@ export function Login() {
     setPassword(value)
   }
 
-  async function initializeSession(event: React.FormEvent) {
-    event.preventDefault()
-    
+  async function initializeSession() {
     try {
-      const { data } = await api.post('/session', { email, password })
-
-      const userInfo: UserInfoData = {
-        id: data.user.id,
-        token: data.token
+      if(email && password) {
+        signIn(email, password)
+        
+        alert('Usuário logado com sucesso.')
+        
+        navigate('/home')
       }
-
-      localStorage.setItem('@showProducts@user:id', String(userInfo.id))
-      localStorage.setItem('@showProducts@user:token', userInfo.token)
-
-      alert('Usuário logado com sucesso.')
     } catch (error) {
-      console.error(error)
+      alert('Houve um erro na aplicacao')
     }
+    
+    
   }
   
   return (
@@ -80,13 +70,14 @@ export function Login() {
                 className="w-full" 
                 placeholder="Digite o sua senha..."
                 onChange={(event) => onChangePasswordInput(event.target.value)}
+                value={password}
               />
             </div>
 
             <div className="flex flex-col gap-3 mt-8">
               <Button 
                 variant="default"
-                onClick={(event) => initializeSession(event)}
+                onClick={() => initializeSession()}
                 >
                   Entrar
                   </Button>
