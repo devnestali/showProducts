@@ -8,15 +8,15 @@ import { Register } from "@/pages/Register";
 import { useAuth } from "@/contexts/authContext";
 
 export function AppRoutes() {
-  const { token, userId } = useAuth()
+  const { token } = useAuth()
   
   return (
     <Routes>
       {
-        token && userId ? (
+        token ? (
         <>
           <Route element={<Home />} path="/home" />
-          <Route element={<Order />} path="/order/:id" />
+          <Route element={<Order />} path="/order/:orderId" />
           <Route element={<OrdersGraph />} path="/graph" />
           <Route element={<Navigate to="/home" replace />} path="/*" />
         </>
