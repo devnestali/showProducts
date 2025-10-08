@@ -1,33 +1,39 @@
-import { Navigate, Route, Routes } from "react-router-dom";
+import { Route, Routes } from "react-router-dom";
 
-import { Home } from "@/pages/Home";
-import { Login } from "@/pages/Login";
-import { Order } from "@/pages/Order";
-import { OrdersGraph } from "@/pages/OrdersGraph";
-import { Register } from "@/pages/Register";
+import { Home } from "@/pages/adminPages/Home";
+import { Login } from "@/pages/signPages/Login";
+import { Order } from "@/pages/adminPages/Order";
+import { OrdersGraph } from "@/pages/adminPages/OrdersGraph";
+import { Register } from "@/pages/signPages/Register";
 import { useAuth } from "@/contexts/authContext";
+import { Form } from "@/pages/userPages/Form";
 
 export function AppRoutes() {
-  const { token } = useAuth()
+  const { token, isAdmin, isLoading } = useAuth()
+
+  if(isLoading) return <div>Carregando...</div>
   
   return (
     <Routes>
-      {
-        token ? (
-        <>
-          <Route element={<Home />} path="/home" />
-          <Route element={<Order />} path="/order/:orderId" />
-          <Route element={<OrdersGraph />} path="/graph" />
-          <Route element={<Navigate to="/home" replace />} path="/*" />
-        </>
+      {token ? (
+        isAdmin ? (
+          <>
+            <Route element={<Home />} path="/" />
+            <Route element={<Order />} path="/order/:orderId" />
+            <Route element={<OrdersGraph />} path="/graph" />
+          </>
         ) : (
           <>
-            <Route element={<Login />} path="/login" />
-            <Route element={<Register />} path="/register" />
-            <Route element={<Navigate to="/login" replace />} path="/*" />
+            <Route element={<Form />} path="/" />
           </>
         )
-      }
+      ) : (
+      <>
+        <Route element={<Login />} path="/" />
+        <Route element={<Register />} path="/register" />
+      </>
+    )}  
     </Routes>
+    
   )
 }
