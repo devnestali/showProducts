@@ -3,6 +3,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { api } from "@/lib/axios";
+import { AxiosError } from "axios";
 import { useState } from "react";
 
 export function Form() {
@@ -18,8 +19,17 @@ export function Form() {
       })
 
       alert(response.data.message)
+
+      setTitle('')
+      setDescription('')
+      
     } catch (error) {
-      console.error(error)
+      if(error instanceof AxiosError) {
+        alert(error.response?.data.message)
+      } else {
+        alert('Erro desconhecido. Entre em contato com o desenvolvedor.')
+      }
+
     }
   }
   
@@ -56,7 +66,7 @@ export function Form() {
 
             <div>
               <Button 
-                type="submit"
+                type="button"
                 variant="success"
                 onClick={() => createOrder()}
               >

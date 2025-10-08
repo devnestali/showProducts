@@ -1,11 +1,12 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 
 import { api } from "@/lib/axios";
+import { AxiosError } from "axios";
 
 export function Register() {
   const [username, setUsername] = useState<string>('')
@@ -44,8 +45,14 @@ export function Register() {
 
     alert(response.data.message)
     handleNavigationToLogin()
+    
     } catch (error) {
-      console.error(error)
+      if(error instanceof AxiosError) {
+        alert(error.response?.data.message)
+      } else {
+        alert('Erro desconhecido. Entre em contato com o desenvolvedor.')
+      }
+
     }
   }
   
@@ -64,7 +71,7 @@ export function Register() {
                 type="text"
                 id="username" 
                 className="w-full" 
-                placeholder="Digite o seu e-mail..."
+                placeholder="Digite o seu nome de usuário..."
                 onChange={(event) => onChangeUsernameInput(event.target.value)}
                 value={username}
               />
@@ -102,12 +109,12 @@ export function Register() {
               >
                 Registrar
               </Button>
-              <Button 
-                variant="link"
-                onClick={() => handleNavigationToLogin()}
+              <Link 
+                to="/"
+                className="text-center hover:underline"
               >
                 Voltar ao login
-              </Button>
+              </Link>
             </div>
           </form>
         </CardContent>

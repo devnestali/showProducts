@@ -4,6 +4,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 
 import { api } from "@/lib/axios";
+import { AxiosError } from "axios";
 
 import { ArrowLeft } from "lucide-react";
 import { useEffect, useState } from "react";
@@ -42,7 +43,11 @@ export function Order() {
 
       alert(response.data.message)
     } catch (error) {
-      console.error(error)
+      if(error instanceof AxiosError) {
+        alert(error.response?.data.message)
+      } else {
+        alert('Erro desconhecido. Entre em contato com o desenvolvedor.')
+      }
     }
   }
 
@@ -56,7 +61,11 @@ export function Order() {
         setUserId(data.userId)
 
       } catch (error) {
-        console.error(error)
+        if(error instanceof AxiosError) {
+          alert(error.response?.data.message)
+        } else {
+          alert('Erro desconhecido. Entre em contato com o desenvolvedor.')
+        }
       }
     }
 
@@ -65,16 +74,24 @@ export function Order() {
 
   useEffect(() => {
     async function fetchForCurrentUserOrder() {
-      const { data } = await api.get('/user', { params: { userId: userId } })
+      try {
+        const { data } = await api.get('/user', { params: { userId: userId } })
 
-      setUser({
-        username: data.username,
-        email: data.email
-      })
+        setUser({
+          username: data.username,
+          email: data.email
+        })
+      } catch (error) {
+        if(error instanceof AxiosError) {
+          alert(error.response?.data.message)
+        } else {
+          alert('Erro desconhecido. Entre em contato com o desenvolvedor.')
+        }
+      }
     }
 
     fetchForCurrentUserOrder()
-  }, [userId])
+  }, [])
   
   return (
     <div className="w-screen flex flex-col justify-center gap-12 p-12">

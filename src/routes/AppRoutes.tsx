@@ -11,7 +11,13 @@ import { Form } from "@/pages/userPages/Form";
 export function AppRoutes() {
   const { token, isAdmin, isLoading } = useAuth()
 
-  if(isLoading) return <div>Carregando...</div>
+  if(isLoading) {
+    return (
+      <div className="w-screen h-screen flex items-center justify-center">
+        Carregando...
+      </div>
+    )
+  }
   
   return (
     <Routes>

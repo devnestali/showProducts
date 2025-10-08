@@ -4,6 +4,7 @@ import {  CartesianGrid, Line, LineChart, ResponsiveContainer, XAxis, YAxis, Too
 import { Header } from "@/components/native/Header";
 
 import { api } from "@/lib/axios";
+import { AxiosError } from "axios";
 
 type GraphInfoData = {
   date: string
@@ -17,16 +18,24 @@ export function OrdersGraph() {
 
   useEffect(() => {
     async function fetchForGraphInfo() {
-      const response = await api.get('/graph')
+      try {
+        const response = await api.get('/graph')
 
-      const graphInfoTransformed: GraphInfoData[] = Object.entries(response.data).map(
-        ([date, orders]) => ({
-          date,
-          orders: orders as number
-        })
-      )
+        const graphInfoTransformed: GraphInfoData[] = Object.entries(response.data).map(
+          ([date, orders]) => ({
+            date,
+            orders: orders as number
+          })
+        )
 
-      setGraphInfo(graphInfoTransformed)
+        setGraphInfo(graphInfoTransformed)
+      } catch (error) {
+        if(error instanceof AxiosError) {
+          alert(error.response?.data.message)
+        } else {
+          alert('Erro desconhecido. Entre em contato com o desenvolvedor.')
+        }
+      }
     }
 
     fetchForGraphInfo()

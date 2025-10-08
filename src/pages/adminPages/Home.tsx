@@ -1,6 +1,7 @@
 import { Header } from "@/components/native/Header"
 import { Product } from "@/components/native/Product"
 import { api } from "@/lib/axios"
+import { AxiosError } from "axios"
 
 import { useEffect, useState } from "react"
 
@@ -17,9 +18,18 @@ export function Home() {
   
   useEffect(() => {
     async function fetchForOrders() {
-      const { data } = await api.get('/order')
+      try {
+        const { data } = await api.get('/order')
 
-      setOrders(data)
+        setOrders(data)
+
+      } catch (error) {
+        if(error instanceof AxiosError) {
+          alert(error.response?.data.message)
+        } else {
+          alert('Erro desconhecido. Entre em contato com o desenvolvedor.')
+        }
+      }
     }
 
     fetchForOrders()

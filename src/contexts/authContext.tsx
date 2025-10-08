@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useEffect, useState } from "react";
 import cookies from "js-cookie";
 import { api } from "@/lib/axios";
+import { AxiosError } from "axios";
 
 type AuthContextType = {
   token: string | undefined;
@@ -12,7 +13,6 @@ type AuthContextType = {
 const AuthContext = createContext<AuthContextType>({} as AuthContextType);
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
-  const [userId, setUserId] = useState<number>();
   const [token, setToken] = useState<string>();
   const [isAdmin, setIsAdmin] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState<boolean>(true);
@@ -29,7 +29,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         isAdmin: data.user.isAdmin,
       };
 
-      setUserId(userInfo.id);
       setToken(userInfo.token);
       setIsAdmin(userInfo.isAdmin);
 
@@ -39,10 +38,16 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
       api.defaults.headers.common["Authorization"] = `Bearer ${userInfo.token}`;
 
-    } catch (error) {
-      console.error(error);
+    } catch (error: unknown) {
+      if (error instanceof AxiosError) {
+        alert(error.response?.data.message)
+      } else {
+        return alert('Erro desconhecido. Entre em contato com o desenvolvedor.')
+      }
+
     } finally {
       setIsLoading(false);
+
     }
   }
 
@@ -53,7 +58,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
     if (token && userId && isAdmin) {
       setToken(token);
-      setUserId(Number(userId));
       setIsAdmin(JSON.parse(isAdmin));
       
       api.defaults.headers.common["Authorization"] = `Bearer ${token}`;

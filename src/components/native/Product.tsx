@@ -7,6 +7,7 @@ import { Button } from "../ui/button";
 import { DeleteButton } from "./DeleteButton";
 import type { Order } from "@/pages/adminPages/Home";
 import { api } from "@/lib/axios";
+import { AxiosError } from "axios";
 
 export interface User {
   username: string
@@ -32,18 +33,30 @@ export function Product({ data }: ProductData) {
 
       alert(response.data.message)
     } catch (error) {
-      console.error(error)
+      if (error instanceof AxiosError) {
+        alert(error.response?.data.message)
+      } else {
+        alert('Erro desconhecido. Entre em contato com o desenvolvedor.')
+      }
     }
   }
 
   useEffect(() => {
     async function fetchForUserOrder() {
-      const response = await api.get('/user', { params: { userId: data.userId } })
+      try {
+        const response = await api.get('/user', { params: { userId: data.userId } })
 
-      setUserData({
-        username: response.data.username,
-        email: response.data.email
-      })
+        setUserData({
+          username: response.data.username,
+          email: response.data.email
+        })
+      } catch (error) {
+        if (error instanceof AxiosError) {
+          alert(error.response?.data.message)
+        } else {
+          alert('Erro desconhecido. Entre em contato com o desenvolvedor.')
+        }
+      }
     }
 
     fetchForUserOrder()

@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -12,10 +12,6 @@ export function Login() {
   
   const navigate = useNavigate()
   const { signIn } = useAuth()
-  
-  function handleNavigationToRegister() {
-    navigate('/register')
-  }
 
   function onChangeEmailInput(value: string) {
     setEmail(value)
@@ -27,13 +23,11 @@ export function Login() {
 
   async function initializeSession() {
     try {
-      if(email && password) {
-        signIn(email, password)
-        
-        navigate('/')
-      }
+      signIn(email, password)
+      
+      navigate('/')
     } catch (error) {
-      alert('Houve um erro na aplicacao')
+      console.error(error)
     }
     
     
@@ -74,17 +68,18 @@ export function Login() {
 
             <div className="flex flex-col gap-3 mt-8">
               <Button 
+                type="submit"
                 variant="default"
                 onClick={() => initializeSession()}
                 >
                   Entrar
                   </Button>
-              <Button 
-                variant="link"
-                onClick={() => handleNavigationToRegister()}
+              <Link 
+                to="/register"
+                className="text-center hover:underline"
               >
                 Registrar-se
-              </Button>
+              </Link>
             </div>
           </form>
         </CardContent>
