@@ -6,8 +6,9 @@ import { AxiosError } from "axios";
 type AuthContextType = {
   token: string | undefined;
   isAdmin: boolean;
-  signIn: (email: string, password: string) => Promise<void>;
   isLoading: boolean;
+  signIn: (email: string, password: string) => Promise<void>;
+  signOut: () => void
 };
 
 const AuthContext = createContext<AuthContextType>({} as AuthContextType);
@@ -51,6 +52,17 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   }
 
+  function signOut() {
+    cookies.remove("userId")
+    localStorage.clear()
+    delete api.defaults.headers.common["Authorization"]
+    
+    setToken('')
+    setIsAdmin(false)
+
+    setIsLoading(false)
+  }
+
   useEffect(() => {
     const token = localStorage.getItem("@showProducts@user:token");
     const userId = cookies.get("userId");
@@ -68,7 +80,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   return (
     <AuthContext.Provider value={{ 
-      signIn, 
+      signIn,
+      signOut, 
       isAdmin, 
       token, 
       isLoading 

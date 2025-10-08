@@ -35,7 +35,7 @@ export function Home() {
     fetchForOrders()
   }, [])
   return (
-    <div className="w-screen">
+    <div>
       <Header />
 
       <div className="flex flex-col gap-4 px-16 py-8">
