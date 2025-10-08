@@ -1,65 +1,79 @@
-import { api } from "@/lib/axios";
 import React, { createContext, useContext, useEffect, useState } from "react";
+import cookies from "js-cookie";
+import { api } from "@/lib/axios";
 
 type AuthContextType = {
-  userId: number | undefined
-  token: string | undefined
-  signIn: (email: string, password: string) => void
-}
+  token: string | undefined;
+  isAdmin: boolean;
+  signIn: (email: string, password: string) => Promise<void>;
+  isLoading: boolean;
+};
 
-const AuthContext = createContext<AuthContextType>({} as AuthContextType)
+const AuthContext = createContext<AuthContextType>({} as AuthContextType);
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
-  const [userId, setUserId] = useState<number>()
-  const [token, setToken] = useState<string>()
-
+  const [userId, setUserId] = useState<number>();
+  const [token, setToken] = useState<string>();
+  const [isAdmin, setIsAdmin] = useState<boolean>(false);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
 
   async function signIn(email: string, password: string) {
     try {
-      const { data } = await api.post('/session', { email, password })
+      setIsLoading(true);
+
+      const { data } = await api.post("/session", { email, password });
 
       const userInfo = {
         id: data.user.id,
-        token: data.token
-      }
+        token: data.token,
+        isAdmin: data.user.isAdmin,
+      };
 
-      setUserId(userInfo.id)
-      setToken(userInfo.token)
-      
-      localStorage.setItem('@showProducts@user:id', String(userInfo.id))
-      localStorage.setItem('@showProducts@user:token', userInfo.token)
+      setUserId(userInfo.id);
+      setToken(userInfo.token);
+      setIsAdmin(userInfo.isAdmin);
 
-      api.defaults.headers.common["Authorization"] = `Bearer ${token}`
+      cookies.set("userId", String(userInfo.id));
+      localStorage.setItem("@showProducts@user:token", userInfo.token);
+      localStorage.setItem("@showProducts@user:isAdmin", JSON.stringify(userInfo.isAdmin));
+
+      api.defaults.headers.common["Authorization"] = `Bearer ${userInfo.token}`;
 
     } catch (error) {
-      console.error(error)
+      console.error(error);
+    } finally {
+      setIsLoading(false);
     }
   }
 
   useEffect(() => {
-    const token = localStorage.getItem('@showProducts@user:token')
-    const userId = localStorage.getItem('@showProducts@user:id')
+    const token = localStorage.getItem("@showProducts@user:token");
+    const userId = cookies.get("userId");
+    const isAdmin = localStorage.getItem("@showProducts@user:isAdmin");
 
-    if(token && userId) {
-      setToken(token)
-      setUserId(Number(userId))
-
-      api.defaults.headers.common["Authorization"] = `Bearer ${token}`
+    if (token && userId && isAdmin) {
+      setToken(token);
+      setUserId(Number(userId));
+      setIsAdmin(JSON.parse(isAdmin));
+      
+      api.defaults.headers.common["Authorization"] = `Bearer ${token}`;
     }
 
-  }, [token, userId])
-  
+    setIsLoading(false);
+  }, []);
+
   return (
-    <AuthContext.Provider value={{
-      signIn,
-      userId,
-      token
+    <AuthContext.Provider value={{ 
+      signIn, 
+      isAdmin, 
+      token, 
+      isLoading 
     }}>
       {children}
     </AuthContext.Provider>
-  )
+  );
 }
 
 export function useAuth() {
-  return useContext(AuthContext)
+  return useContext(AuthContext);
 }
