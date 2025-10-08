@@ -22,7 +22,7 @@ export function Header() {
                 <Link to="/">Início</Link>
               </NavigationMenuLink>
               <NavigationMenuLink asChild>
-                <Link to="/orders-graph">Grafico</Link>
+                <Link to="/graph">Grafico</Link>
               </NavigationMenuLink>
             </NavigationMenuItem>
           </NavigationMenuList>

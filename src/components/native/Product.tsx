@@ -1,28 +1,70 @@
 import { useNavigate } from "react-router-dom";
-import { Button } from "../ui/button";
+import { useEffect, useState } from "react";
 import { Pencil, Trash2 } from 'lucide-react'
 
-import { DeleteButton } from "./DeleteButton";
+import { Button } from "../ui/button";
 
-export function Product() {
+import { DeleteButton } from "./DeleteButton";
+import type { Order } from "@/pages/adminPages/Home";
+import { api } from "@/lib/axios";
+
+export interface User {
+  username: string
+  email: string
+}
+
+type ProductData = {
+  data: Order
+}
+
+export function Product({ data }: ProductData) {
+  const [userData, setUserData] = useState<User>()
+
   const navigate = useNavigate()
 
   function handleNavigationToOrder() {
-    navigate("/order/1")
+    navigate(`/order/${data.id}`)
   }
 
-  
+  async function handleDeleteOrder() {
+    try {
+      const response = await api.delete(`/order/${data.id}`)
+
+      alert(response.data.message)
+    } catch (error) {
+      console.error(error)
+    }
+  }
+
+  useEffect(() => {
+    async function fetchForUserOrder() {
+      const response = await api.get('/user', { params: { userId: data.userId } })
+
+      setUserData({
+        username: response.data.username,
+        email: response.data.email
+      })
+    }
+
+    fetchForUserOrder()
+  }, [])
+
   return (
     <div className="flex flex-col gap-3 bg-accent p-6 rounded-lg">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="font-bold text-3xl leading-relaxed text-accent-foreground">Realizar pedidos de folhas</h1>
-          <p className="text-accent-foreground opacity-80">É necessario fazer um pedido de folhas para a papelaria</p>
+          <h1 className="font-bold text-3xl leading-relaxed text-accent-foreground">
+            {data.title}
+          </h1>
+          <p className="text-accent-foreground opacity-80">
+            {data.description}
+          </p>
 
           <div className="flex flex-col justify-center">
             <ul className="list-disc pl-4 mt-8">
-              <li>Usuário: John Doe</li>
-              <li>Email: johndoe@example.com</li>
+              <li>Usuário: {userData?.username}</li>
+              <li>Email: {userData?.email}</li>
+              <li>Data: {data.orderDate.split('T')[0]}</li>
             </ul>
           </div>
         </div>
@@ -37,7 +79,9 @@ export function Product() {
           </Button>
           
           <div>
-           <DeleteButton>
+           <DeleteButton
+            onDelete={handleDeleteOrder}
+           >
             <Button 
               variant="destructive" 
               className="p-4 cursor-pointer"
