@@ -29,9 +29,9 @@ export function Product({ data }: ProductData) {
 
   async function handleDeleteOrder() {
     try {
-      const response = await api.delete(`/order/${data.id}`)
-
-      alert(response.data.message)
+      await api.delete(`/order/${data.id}`)
+    
+      window.location.reload()
     } catch (error) {
       if (error instanceof AxiosError) {
         alert(error.response?.data.message)

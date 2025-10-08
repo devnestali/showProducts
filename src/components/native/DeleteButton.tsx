@@ -39,7 +39,7 @@ export function DeleteButton({ children, onDelete }: DeleteButtonParams) {
         </AlertDialogHeader>
         <AlertDialogFooter>
           <AlertDialogCancel className="cursor-pointer">Cancelar</AlertDialogCancel>
-          <Button 
+          <Button
             variant="destructive" 
             className="cursor-pointer"
             onClick={handleClickToDelete}
